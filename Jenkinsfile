@@ -30,12 +30,16 @@ pipeline {
 
         stage('Deployments') {
             parallel {
-                steps('Deploy to dev') {
-                    sh "docker cp **/target/*.war ${params.tomcat_dev}:/usr/local/tomcat/webapps"
+                stage('Deploy to dev') {
+                    steps {
+                        sh "docker cp **/target/*.war ${params.tomcat_dev}:/usr/local/tomcat/webapps"
+                    }
                 }
 
-                steps('Deploy to production') {
-                    sh "docker cp **/target/*.war ${params.tomcat_prod}:/usr/local/tomcat/webapps"
+                stage('Deploy to production') {
+                    steps {
+                        sh "docker cp **/target/*.war ${params.tomcat_prod}:/usr/local/tomcat/webapps"
+                    }
                 }
             }   
         }
