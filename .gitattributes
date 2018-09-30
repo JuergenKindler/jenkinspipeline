@@ -1,1 +1,2 @@
 webapp/src/main/*.jsp ident
+webapp/src/main/WEB-INF/web.xml
