@@ -7,8 +7,8 @@ pipeline {
     }
 
     parameters {
-        string ( name: 'tomcat_dev', defaultvalue: 'udemy_staging_tomcat', description: 'Development Tomcat')
-        string ( name: 'tomcat_prod', defaultvalue: 'udemy_production_tomcat', description: 'Production Tomcat')
+        string ( name: 'tomcat_dev', defaultValue: 'udemy_staging_tomcat', description: 'Development Tomcat')
+        string ( name: 'tomcat_prod', defaultValue: 'udemy_production_tomcat', description: 'Production Tomcat')
     }
 
     triggers {
@@ -30,11 +30,11 @@ pipeline {
 
         stage('Deployments') {
             parallel {
-                stage('Deploy to dev') {
+                steps('Deploy to dev') {
                     sh "docker cp **/target/*.war ${params.tomcat_dev}:/usr/local/tomcat/webapps"
                 }
 
-                stage('Deploy to production') {
+                steps('Deploy to production') {
                     sh "docker cp **/target/*.war ${params.tomcat_prod}:/usr/local/tomcat/webapps"
                 }
             }   
