@@ -6,44 +6,38 @@ pipeline {
         jdk 'local_jdk'
     }
 
-    stages {
-        stage('Build') {
+    parameters {
+        string ( name: 'tomcat_dev', defaultvalue: 'udemy_staging_tomcat', description: 'Development Tomcat')
+        string ( name: 'tomcat_prod', defaultvalue: 'udemy_production_tomcat', description: 'Production Tomcat')
+    }
+
+    triggers {
+        pollSCM(* * * * *)
+    }
+
+    stages{
+        stage('Build'){
             steps {
                 sh 'mvn clean package'
             }
             post {
                 success {
-                    echo 'Now archiving ...'
+                    echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
-                    echo '... done!'
                 }
             }
         }
 
-        stage('Deploy to staging') {
-            steps {
-                build job: 'Deploy-to-staging'
-            }
-        }
-
-        stage('Deploy to production') {
-            steps {
-                timeout( time: 5, unit: 'DAYS' ) {
-                    input message: 'Approve deployment to production?'
+        stage('Deployments') {
+            parallel {
+                stage('Deploy to dev') {
+                    sh "docker cp **/target/*.war ${params.tomcat_dev}:/usr/local/tomcat/webapps"
                 }
 
-                build job: 'deploy-to-prod'
-            }
-
-            post {
-                success {
-                    echo '(-: Deployed to production. :-)'
+                stage('Deploy to production') {
+                    sh "docker cp **/target/*.war ${params.tomcat_prod}:/usr/local/tomcat/webapps"
                 }
-
-                failure {
-                    echo '*** Failed to deploy to production. ***'
-                }
-            }
+            }   
         }
     }
 }
