@@ -5,7 +5,7 @@ pipeline {
         maven 'localMaven'
         jdk 'local_jdk'
     }
-    
+
     stages {
         stage('Build') {
             steps {
@@ -15,7 +15,7 @@ pipeline {
                 success {
                     echo 'Now archiving ...'
                     archiveArtifacts artifacts: '**/target/*.war'
-                    echo '... done!'
+                    echo '... done!!!'
                 }
             }
         }
